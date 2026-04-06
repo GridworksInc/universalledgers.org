@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Ledger Protocol</title>
+    <meta name="description" content="An open protocol for secure, standardized business document exchange. HTTP for accounting.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: #0f172a; background: #fff; }
+        code, pre { font-family: 'JetBrains Mono', monospace; }
+        a { color: #4f46e5; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        [data-lang] { display: none; }
+        [data-lang].active { display: revert; }
+
+        .lang-switch {
+            position: fixed; top: 1rem; right: 1rem; z-index: 100;
+            display: flex; background: rgba(15,23,42,0.8); border-radius: 8px; overflow: hidden;
+            backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15);
+        }
+        .lang-switch button {
+            padding: 0.4rem 0.9rem; border: none; background: transparent;
+            color: #94a3b8; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .lang-switch button.active { background: #4f46e5; color: #fff; }
+
+        .hero {
+            min-height: 90vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #fff; text-align: center; padding: 4rem 2rem;
+        }
+        .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.5rem; line-height: 1.1; }
+        .hero h1 span { background: linear-gradient(135deg, #818cf8, #a78bfa, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.25rem; color: #94a3b8; max-width: 640px; margin: 0 auto 2.5rem; line-height: 1.6; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .hero-buttons a {
+            padding: 0.875rem 2rem; border-radius: 8px; font-weight: 600; font-size: 1rem; transition: all 0.2s;
+        }
+        .btn-primary { background: #4f46e5; color: #fff !important; }
+        .btn-primary:hover { background: #4338ca; text-decoration: none !important; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #e2e8f0 !important; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); text-decoration: none !important; }
+
+        .section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+        .section h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; text-align: center; }
+        .section .subtitle { text-align: center; color: #64748b; font-size: 1.1rem; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .feature { padding: 2rem; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .feature h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .feature p { color: #64748b; font-size: 0.95rem; line-height: 1.6; }
+        .feature .icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.5rem; }
+
+        .comparison { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        .comparison th, .comparison td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; }
+        .comparison th { background: #f8fafc; font-weight: 600; color: #475569; }
+        .comparison td:first-child { font-weight: 500; }
+        .check { color: #22c55e; font-weight: 700; }
+        .cross { color: #cbd5e1; }
+
+        pre.code-block {
+            background: #0f172a; color: #e2e8f0; padding: 1.5rem; border-radius: 12px;
+            overflow-x: auto; font-size: 0.9rem; line-height: 1.6; margin: 2rem 0;
+        }
+        pre.code-block .c { color: #64748b; }
+        pre.code-block .k { color: #818cf8; }
+        pre.code-block .s { color: #a5f3fc; }
+        pre.code-block .n { color: #fbbf24; }
+
+        .chain-visual {
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 3rem 0; flex-wrap: wrap;
+        }
+        .chain-block {
+            background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;
+            text-align: center; min-width: 160px;
+        }
+        .chain-block .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+        .chain-block .hash { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #4f46e5; margin-top: 0.25rem; }
+        .chain-block .type { font-weight: 600; margin-top: 0.5rem; }
+        .chain-arrow { font-size: 1.5rem; color: #94a3b8; }
+
+        .bg-alt { background: #f8fafc; max-width: 100%; }
+        .bg-alt > div { max-width: 1100px; margin: 0 auto; }
+
+        .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .specs-grid a { text-decoration: none; color: inherit; }
+        .specs-grid a:hover { text-decoration: none; }
+        .specs-grid a:hover .feature { border-color: #a5b4fc; }
+
+        .cta {
+            background: #0f172a; color: #fff; text-align: center; padding: 5rem 2rem; margin-top: 3rem;
+        }
+        .cta h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .cta p { color: #94a3b8; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+        footer { padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.875rem; border-top: 1px solid #e2e8f0; }
+        footer a { color: #64748b; }
+
+        @media (max-width: 640px) {
+            .chain-visual { flex-direction: column; }
+            .chain-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="lang-switch">
+    <button onclick="setLang('en')" id="btn-en" class="active">EN</button>
+    <button onclick="setLang('ja')" id="btn-ja">JA</button>
+</div>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+    <div>
+        <h1>Universal Ledger<br><span>Protocol</span></h1>
+        <p data-lang="en" class="active">An open protocol for secure, standardized business document exchange. No CSV. No vendor lock-in. Just send.</p>
+        <p data-lang="ja">安全で標準化されたビジネス文書交換のためのオープンプロトコル。CSV変換不要。ベンダーロックインなし。</p>
+        <div class="hero-buttons">
+            <a href="https://github.com/GridworksInc/ulp-node/blob/main/spec/PROTOCOL.md" class="btn-primary" data-lang="en" class="active">Read the Spec</a>
+            <a href="https://github.com/GridworksInc/ulp-node/blob/main/spec/PROTOCOL.md" class="btn-primary" data-lang="ja">仕様書を読む</a>
+            <a href="https://github.com/GridworksInc/ulp-node" class="btn-secondary">GitHub</a>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== WHY ULP ==================== -->
+<div class="section">
+    <h2 data-lang="en" class="active">Why ULP?</h2>
+    <h2 data-lang="ja">なぜULPなのか？</h2>
+    <p class="subtitle" data-lang="en" class="active">Today, exchanging invoices between systems requires CSV exports, manual mapping, or expensive EDI. ULP replaces all of that with one open standard.</p>
+    <p class="subtitle" data-lang="ja">現在、システム間で請求書をやり取りするにはCSV出力・手動マッピング・高額なEDIが必要です。ULPはこれらすべてをひとつのオープン標準で置き換えます。</p>
+
+    <div class="features">
+        <div class="feature">
+            <div class="icon" style="background:#eef2ff;">&#128220;</div>
+            <h3 data-lang="en" class="active">One Open Format</h3>
+            <h3 data-lang="ja">ひとつのオープンフォーマット</h3>
+            <p data-lang="en" class="active">Any system can send and receive invoices using the same JSON schema. No per-vendor integrations needed.</p>
+            <p data-lang="ja">同じJSONスキーマで、どのシステムとも請求書を送受信。ベンダーごとの個別連携は不要です。</p>
+        </div>
+        <div class="feature">
+            <div class="icon" style="background:#f0fdf4;">&#128274;</div>
+            <h3 data-lang="en" class="active">Tamper-Evident</h3>
+            <h3 data-lang="ja">改ざん検知</h3>
+            <p data-lang="en" class="active">Every document is hash-chained (like Git). Modification of any record breaks the chain and is instantly detectable.</p>
+            <p data-lang="ja">すべての文書がGitのようにハッシュチェーンで連結。どのレコードの改ざんも即座に検出されます。</p>
+        </div>
+        <div class="feature">
+            <div class="icon" style="background:#fef3c7;">&#9889;</div>
+            <h3 data-lang="en" class="active">Not Blockchain</h3>
+            <h3 data-lang="ja">ブロックチェーンではない</h3>
+            <p data-lang="en" class="active">No mining. No consensus. No gas fees. Near-zero energy. Just cryptographic integrity that works.</p>
+            <p data-lang="ja">マイニングなし。合意形成なし。ガス代なし。エネルギー消費ほぼゼロ。暗号学的な完全性だけ。</p>
+        </div>
+        <div class="feature">
+            <div class="icon" style="background:#fce7f3;">&#128230;</div>
+            <h3 data-lang="en" class="active">Envelope Architecture</h3>
+            <h3 data-lang="ja">エンベロープ方式</h3>
+            <p data-lang="en" class="active">Invoices today, estimates and receipts tomorrow. The envelope carries any business document type.</p>
+            <p data-lang="ja">今日は請求書、明日は見積書・領収書。エンベロープはあらゆるビジネス文書を運べます。</p>
+        </div>
+        <div class="feature">
+            <div class="icon" style="background:#ecfeff;">&#127760;</div>
+            <h3 data-lang="en" class="active">Japan-Ready</h3>
+            <h3 data-lang="ja">日本の制度に対応</h3>
+            <p data-lang="en" class="active">Compatible with the Qualified Invoice System, Electronic Bookkeeping Law, and Peppol.</p>
+            <p data-lang="ja">インボイス制度・電子帳簿保存法・Peppolに対応した設計です。</p>
+        </div>
+        <div class="feature">
+            <div class="icon" style="background:#f5f3ff;">&#128736;</div>
+            <h3 data-lang="en" class="active">Easy to Implement</h3>
+            <h3 data-lang="ja">簡単に実装可能</h3>
+            <p data-lang="en" class="active">A developer can build a ULP client in a day. It's just HTTP + JSON + SHA-256.</p>
+            <p data-lang="ja">開発者は1日でULPクライアントを実装できます。HTTP + JSON + SHA-256だけ。</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== HOW IT WORKS ==================== -->
+<div class="section bg-alt" style="padding-left:2rem;padding-right:2rem;">
+    <div>
+        <h2 data-lang="en" class="active">How It Works</h2>
+        <h2 data-lang="ja">仕組み</h2>
+        <p class="subtitle" data-lang="en" class="active">Documents are wrapped in a hash-chained envelope. Each envelope references the previous one, creating an immutable audit trail.</p>
+        <p class="subtitle" data-lang="ja">文書はハッシュチェーンのエンベロープで包まれます。各エンベロープが前のものを参照し、改ざん不能な監査証跡を作ります。</p>
+
+        <div class="chain-visual">
+            <div class="chain-block">
+                <div class="label">Envelope #1</div>
+                <div class="type">Invoice INV-001</div>
+                <div class="hash">parent: null</div>
+                <div class="hash">hash: a7f4d2...</div>
+            </div>
+            <div class="chain-arrow">&#8594;</div>
+            <div class="chain-block">
+                <div class="label">Envelope #2</div>
+                <div class="type">Invoice INV-002</div>
+                <div class="hash">parent: a7f4d2...</div>
+                <div class="hash">hash: b2e9c8...</div>
+            </div>
+            <div class="chain-arrow">&#8594;</div>
+            <div class="chain-block">
+                <div class="label">Envelope #3</div>
+                <div class="type">Invoice INV-003</div>
+                <div class="hash">parent: b2e9c8...</div>
+                <div class="hash">hash: c5d1f3...</div>
+            </div>
+        </div>
+
+        <pre class="code-block"><span class="c">// Send an invoice via ULP</span>
+POST /ulp/v1/envelope
+{
+  <span class="k">"envelope_type"</span>: <span class="s">"invoice"</span>,
+  <span class="k">"payload"</span>: {
+    <span class="k">"invoice_id"</span>: <span class="s">"INV-2026-0001"</span>,
+    <span class="k">"total"</span>: <span class="n">583000</span>,
+    <span class="k">"currency"</span>: <span class="s">"JPY"</span>,
+    ...
+  },
+  <span class="k">"sender"</span>: { <span class="k">"id"</span>: <span class="s">"company-a"</span>, <span class="k">"name"</span>: <span class="s">"Gridworks Inc."</span> },
+  <span class="k">"receiver"</span>: { <span class="k">"id"</span>: <span class="s">"company-b"</span>, <span class="k">"name"</span>: <span class="s">"Acme Corp."</span> }
+}
+
+<span class="c">// Response</span>
+{ <span class="k">"status"</span>: <span class="s">"ACCEPTED"</span>, <span class="k">"hash"</span>: <span class="s">"e3b0c442..."</span>, <span class="k">"sequence"</span>: <span class="n">42</span> }</pre>
+    </div>
+</div>
+
+<!-- ==================== COMPARISON ==================== -->
+<div class="section">
+    <h2 data-lang="en" class="active">ULP vs Alternatives</h2>
+    <h2 data-lang="ja">ULPと他の方式の比較</h2>
+    <table class="comparison">
+        <thead>
+            <tr>
+                <th></th><th>ULP</th><th data-lang="en" class="active">Blockchain</th><th data-lang="ja">ブロックチェーン</th><th>EDI</th><th>CSV/Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td data-lang="en" class="active">Tamper detection</td><td data-lang="ja">改ざん検知</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+            <tr><td data-lang="en" class="active">Open standard</td><td data-lang="ja">オープン標準</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+            <tr><td data-lang="en" class="active">Zero energy waste</td><td data-lang="ja">エネルギー消費ゼロ</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+            <tr><td data-lang="en" class="active">Instant confirmation</td><td data-lang="ja">即時確認</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+            <tr><td data-lang="en" class="active">No fixed cost</td><td data-lang="ja">固定費なし</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
+            <tr><td data-lang="en" class="active">Structured data</td><td data-lang="ja">構造化データ</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td></tr>
+            <tr><td data-lang="en" class="active">Easy to implement</td><td data-lang="ja">実装が容易</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== SPECIFICATION ==================== -->
+<div class="section">
+    <h2 data-lang="en" class="active">Specification</h2>
+    <h2 data-lang="ja">仕様書</h2>
+    <p class="subtitle" data-lang="en" class="active">ULP is fully documented and open for anyone to implement.</p>
+    <p class="subtitle" data-lang="ja">ULPは完全にドキュメント化されており、誰でも実装できます。</p>
+    <div class="specs-grid">
+        <a href="https://github.com/GridworksInc/ulp-node/blob/main/spec/PROTOCOL.md">
+            <div class="feature">
+                <h3 data-lang="en" class="active">Protocol Spec</h3>
+                <h3 data-lang="ja">プロトコル仕様</h3>
+                <p data-lang="en" class="active">Core protocol, transport, authentication, versioning</p>
+                <p data-lang="ja">コアプロトコル、トランスポート、認証、バージョニング</p>
+            </div>
+        </a>
+        <a href="https://github.com/GridworksInc/ulp-node/blob/main/spec/ENVELOPE.md">
+            <div class="feature">
+                <h3 data-lang="en" class="active">Envelope Format</h3>
+                <h3 data-lang="ja">エンベロープ形式</h3>
+                <p data-lang="en" class="active">Document wrapper, validation rules, extensibility</p>
+                <p data-lang="ja">文書ラッパー、バリデーションルール、拡張性</p>
+            </div>
+        </a>
+        <a href="https://github.com/GridworksInc/ulp-node/blob/main/spec/INVOICE.md">
+            <div class="feature">
+                <h3 data-lang="en" class="active">Invoice Schema</h3>
+                <h3 data-lang="ja">請求書スキーマ</h3>
+                <p data-lang="en" class="active">Full invoice payload with Japan compliance</p>
+                <p data-lang="ja">インボイス制度対応の請求書ペイロード定義</p>
+            </div>
+        </a>
+        <a href="https://github.com/GridworksInc/ulp-node/blob/main/spec/HASHCHAIN.md">
+            <div class="feature">
+                <h3 data-lang="en" class="active">Hash Chain</h3>
+                <h3 data-lang="ja">ハッシュチェーン</h3>
+                <p data-lang="en" class="active">Integrity mechanism, audit process, comparisons</p>
+                <p data-lang="ja">完全性メカニズム、監査プロセス、他方式との比較</p>
+            </div>
+        </a>
+        <a href="https://github.com/GridworksInc/ulp-node/blob/main/spec/API.md">
+            <div class="feature">
+                <h3 data-lang="en" class="active">API Reference</h3>
+                <h3 data-lang="ja">APIリファレンス</h3>
+                <p data-lang="en" class="active">HTTP endpoints, authentication, webhooks</p>
+                <p data-lang="ja">HTTPエンドポイント、認証、Webhook</p>
+            </div>
+        </a>
+        <a href="https://github.com/GridworksInc/ulp-node">
+            <div class="feature">
+                <h3 data-lang="en" class="active">Reference Implementation</h3>
+                <h3 data-lang="ja">リファレンス実装</h3>
+                <p data-lang="en" class="active">TypeScript implementation (MIT licensed)</p>
+                <p data-lang="ja">TypeScript実装（MITライセンス）</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- ==================== CTA ==================== -->
+<div class="cta">
+    <h2 data-lang="en" class="active">Build with ULP</h2>
+    <h2 data-lang="ja">ULPで構築する</h2>
+    <p data-lang="en" class="active">ULP is open source and free to implement. Start exchanging invoices in minutes.</p>
+    <p data-lang="ja">ULPはオープンソースで、自由に実装できます。数分で請求書の交換を始められます。</p>
+    <div class="hero-buttons">
+        <a href="https://github.com/GridworksInc/ulp-node" class="btn-primary" data-lang="en" class="active">Get Started on GitHub</a>
+        <a href="https://github.com/GridworksInc/ulp-node" class="btn-primary" data-lang="ja">GitHubで始める</a>
+    </div>
+</div>
+
+<footer>
+    <p>Universal Ledger Protocol is an open standard by <a href="https://gridworks.co.jp">Gridworks Inc.</a> &middot; <a href="https://github.com/GridworksInc/ulp-node">GitHub</a> &middot; MIT License</p>
+</footer>
+
+<script>
+function setLang(lang) {
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-lang') === lang);
+    });
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
+    document.documentElement.lang = lang;
+    localStorage.setItem('ulp-lang', lang);
+}
+// 初期言語: ブラウザ設定 or 保存済み
+const saved = localStorage.getItem('ulp-lang');
+const browserLang = navigator.language.startsWith('ja') ? 'ja' : 'en';
+setLang(saved || browserLang);
+</script>
+
+</body>
+</html>
