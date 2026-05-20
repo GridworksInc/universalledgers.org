@@ -310,6 +310,66 @@ POST /ulp/v1/envelope
     </div>
 </div>
 
+<!-- ==================== LIVE SANDBOX ==================== -->
+<div class="section bg-alt" style="padding-left:2rem;padding-right:2rem;">
+    <div>
+        <h2 data-lang="en" class="active">Live Sandbox</h2>
+        <h2 data-lang="ja">公開サンドボックス</h2>
+        <p class="subtitle" data-lang="en" class="active">A publicly accessible ULP node is running 24/7. Send envelopes, query the ledger, verify integrity — without signing up.</p>
+        <p class="subtitle" data-lang="ja">公開ULPノードを24時間稼働中。サインアップ不要で envelope を送り、台帳を取得し、整合性を検証できます。</p>
+
+        <div class="features">
+            <div class="feature">
+                <h3 data-lang="en" class="active">Public ULS Node</h3>
+                <h3 data-lang="ja">公開ULSノード</h3>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.5;">
+                    <strong data-lang="en" class="active">Endpoint:</strong>
+                    <strong data-lang="ja">エンドポイント:</strong>
+                    <a href="https://uls1.gridworks.co.jp/ulp/v1/info">https://uls1.gridworks.co.jp</a><br>
+                    <strong data-lang="en" class="active">Sandbox IP:</strong>
+                    <strong data-lang="ja">サンドボックスIP:</strong> 131.186.34.78<br>
+                    <strong data-lang="en" class="active">Operator:</strong>
+                    <strong data-lang="ja">運営:</strong> Gridworks Inc.<br>
+                    <strong data-lang="en" class="active">Node ID:</strong>
+                    <strong data-lang="ja">ノードID:</strong> uls1-production
+                </p>
+            </div>
+            <div class="feature">
+                <h3 data-lang="en" class="active">Real-world Sender</h3>
+                <h3 data-lang="ja">実運用送信元</h3>
+                <p data-lang="en" class="active"><a href="https://worksgrid.io">worksgrid.io</a> — a multi-tenant Japanese business OS — emits invoices into this node from its invoice screen. Genesis envelope was recorded on 2026-05-20.</p>
+                <p data-lang="ja"><a href="https://worksgrid.io">worksgrid.io</a>（マルチテナント日本向け仕事OS）は、請求書画面からこのノードへ envelope を発行しています。Genesis envelope は 2026-05-20 に記録。</p>
+            </div>
+            <div class="feature">
+                <h3 data-lang="en" class="active">Try It Now</h3>
+                <h3 data-lang="ja">いますぐ試す</h3>
+                <p data-lang="en" class="active">From any terminal: query node info, fetch envelopes addressed to your organization, and audit the chain.</p>
+                <p data-lang="ja">任意の端末から: ノード情報の取得、自社宛て envelope の検索、台帳整合性の監査が可能です。</p>
+            </div>
+        </div>
+
+<pre class="code-block"><span class="c"># Node info (no auth required)</span>
+curl https://uls1.gridworks.co.jp/ulp/v1/info
+
+<span class="c"># Audit ledger integrity</span>
+curl -H "Authorization: Bearer $ULP_API_KEY" \
+     https://uls1.gridworks.co.jp/ulp/v1/ledger/audit
+
+<span class="c"># Fetch envelopes addressed to your organization</span>
+curl -H "Authorization: Bearer $ULP_API_KEY" \
+     "https://uls1.gridworks.co.jp/ulp/v1/envelopes?envelope_type=invoice"</pre>
+
+        <p style="font-size:0.85rem;color:#64748b;margin-top:1rem;" data-lang="en" class="active">
+            Need an API key for the sandbox? Email <a href="mailto:tatsuya.sato@gridworks.co.jp">tatsuya.sato@gridworks.co.jp</a>.
+            Read-only endpoints (<code>/ulp/v1/info</code>) are public.
+        </p>
+        <p style="font-size:0.85rem;color:#64748b;margin-top:1rem;" data-lang="ja">
+            サンドボックスのAPIキーが必要な場合は <a href="mailto:tatsuya.sato@gridworks.co.jp">tatsuya.sato@gridworks.co.jp</a> までご連絡ください。
+            読み取り専用エンドポイント (<code>/ulp/v1/info</code>) は公開です。
+        </p>
+    </div>
+</div>
+
 <!-- ==================== CTA ==================== -->
 <div class="cta">
     <h2 data-lang="en" class="active">Build with ULP</h2>
